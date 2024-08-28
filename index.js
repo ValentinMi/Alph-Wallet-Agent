@@ -1,7 +1,6 @@
 import {
   DUST_AMOUNT,
   NodeProvider,
-  convertAlphAmountWithDecimals,
 } from "@alephium/web3";
 import { PrivateKeyWallet } from "@alephium/web3-wallet";
 
