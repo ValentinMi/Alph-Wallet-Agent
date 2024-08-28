@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@alephium/web3": "^1.5.2",
+    "@alephium/web3-wallet": "^1.5.2"
+  },
+  "type": "module",
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
