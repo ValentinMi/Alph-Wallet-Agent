@@ -1,8 +1,5 @@
-import {
-  DUST_AMOUNT,
-  NodeProvider,
-} from "@alephium/web3";
-import { PrivateKeyWallet } from "@alephium/web3-wallet";
+import {DUST_AMOUNT, NodeProvider,} from "@alephium/web3";
+import {PrivateKeyWallet} from "@alephium/web3-wallet";
 
 const beneficiaryAddress = process.env.BENEFICIARY_ADDRESS;
 const privateKey = process.env.INTERMEDIARY_ADDRESS_PRIVATE_KEY;
@@ -23,7 +20,7 @@ setInterval(main, interval)
 async function main() {
   const balance = await getBalance(wallet.address);
   if (BigInt(balance) < DUST_AMOUNT * 10n)
-    return console.log("Insufficient balance to transfer");
+    return console.log(`[${getFormattedDate()}] -- Insufficient balance to transfer`);
 
   const transaction = await buildTransaction(
     BigInt(balance) - DUST_AMOUNT * 10n,
@@ -35,10 +32,8 @@ async function main() {
     unsignedTx: transaction.unsignedTx,
   });
 
-  console.log("Transfer successful with txId: ", txResult.txId);
+  console.log(`[${getFormattedDate()}] -- Transfer successful with txId: ${txResult.txId}`);
 }
-
-
 
 /**
  * @param {String} address
@@ -64,4 +59,18 @@ async function buildTransaction(amount, destinationAddress) {
       },
     ],
   });
+}
+
+
+function getFormattedDate() {
+  const date = new Date();
+
+  // Get day, month, year, hours, and minutes
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${day}/${month}/${year}-${hours}:${minutes}`;
 }
