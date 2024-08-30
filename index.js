@@ -6,7 +6,7 @@ import {
 } from "@alephium/web3";
 import { PrivateKeyWallet } from "@alephium/web3-wallet";
 
-const beneficiaryAddress = process.env.BENEFICIARY_ADDRESS;
+const BENEFICIARY_ADDRESS = process.env.BENEFICIARY_ADDRESS;
 const privateKey = process.env.INTERMEDIARY_ADDRESS_PRIVATE_KEY;
 const NODE_URL = process.env.NODE_URL;
 
@@ -20,7 +20,7 @@ const interval = process.env.CALL_INTERVAL_IN_MILLISECOND ||  6 * 60 * 60 * 1000
 
 main().then(() => {
   setInterval(main, interval);
-});
+}).catch(e => log(e.message));
 
 async function main() {
   const balance = await getBalance(wallet.address);
@@ -32,7 +32,7 @@ async function main() {
 
   const transaction = await buildTransaction(
     BigInt(balance) - DUST_AMOUNT * 10n,
-    beneficiaryAddress,
+    BENEFICIARY_ADDRESS,
   );
 
   const txResult = await wallet.signAndSubmitUnsignedTx({
