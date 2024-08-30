@@ -1,5 +1,10 @@
-import {DUST_AMOUNT, NodeProvider,} from "@alephium/web3";
-import {PrivateKeyWallet} from "@alephium/web3-wallet";
+import {
+  DUST_AMOUNT,
+  NodeProvider,
+  ONE_ALPH,
+  prettifyAttoAlphAmount,
+} from "@alephium/web3";
+import { PrivateKeyWallet } from "@alephium/web3-wallet";
 
 const beneficiaryAddress = process.env.BENEFICIARY_ADDRESS;
 const privateKey = process.env.INTERMEDIARY_ADDRESS_PRIVATE_KEY;
@@ -11,16 +16,19 @@ const wallet = new PrivateKeyWallet({
   privateKey,
 });
 
-const interval =  process.env.CALL_INTERVAL_IN_HOUR * 60 * 60 * 1000;
+const interval = process.env.CALL_INTERVAL_IN_MILLISECOND ||  6 * 60 * 60 * 1000 // Default is 6 hours;
 
 main().then(() => {
-setInterval(main, interval)
-})
+  setInterval(main, interval);
+});
 
 async function main() {
   const balance = await getBalance(wallet.address);
-  if (BigInt(balance) < DUST_AMOUNT * 10n)
-    return console.log(`[${getFormattedDate()}] -- Insufficient balance to transfer`);
+
+  if (BigInt(balance) < ONE_ALPH)
+    return log(
+      `Balance is less than 1 ALPH. Current balance: ${prettifyAttoAlphAmount(balance)} ALPH`,
+    );
 
   const transaction = await buildTransaction(
     BigInt(balance) - DUST_AMOUNT * 10n,
@@ -32,7 +40,7 @@ async function main() {
     unsignedTx: transaction.unsignedTx,
   });
 
-  console.log(`[${getFormattedDate()}] -- Transfer successful with txId: ${txResult.txId}`);
+  return log(`Transfer successful with txId: ${txResult.txId}`);
 }
 
 /**
@@ -61,16 +69,19 @@ async function buildTransaction(amount, destinationAddress) {
   });
 }
 
-
 function getFormattedDate() {
   const date = new Date();
 
   // Get day, month, year, hours, and minutes
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const hours = String(date.getUTCHours() + 2).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
 
   return `${day}/${month}/${year}-${hours}:${minutes}`;
+}
+
+function log(message) {
+  console.log(`[${getFormattedDate()}] -- ${message}`);
 }
