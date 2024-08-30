@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "@alephium/web3": "^1.5.2",
-    "@alephium/web3-wallet": "^1.5.2"
+    "@alephium/web3-wallet": "^1.5.2",
+    "node-cron": "^3.0.3"
   },
   "type": "module",
   "devDependencies": {
